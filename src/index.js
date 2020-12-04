@@ -1,6 +1,7 @@
 require('dotenv').config()
 var process = require('process')
 const express = require('express')
+var CronJob = require('cron').CronJob;
 const etherscan = require('./etherscan');
 const AppError = require('./error');
 const prom = require('./prometheus');
@@ -23,9 +24,7 @@ const startServer = () => {
     server.listen(serverPort, serverHost, () => console.log(`Http server running on port ${serverHost}:${serverPort}`));
 }
 
-const main = async () => {
-    startServer();
-
+const run = async () => {
     const statediffUser = process.env.STATEDIFF_PG_USER;
     const statediffPassword = process.env.STATEDIFF_PG_PASSWORD;
     const statediffDB = process.env.STATEDIFF_PG_DATABASE;
@@ -43,11 +42,8 @@ const main = async () => {
         dbStateDiffBlockNumber,
 
     ])
-    // console.log(results);
 
     for (const result of results) {
-        // console.log(result);
-
         if (result.status === 'rejected') {
             if (result.reason instanceof AppError) {
                 const errorData = result.reason.data;
@@ -69,6 +65,35 @@ const main = async () => {
             }
         }
     }
+}
+
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+const main = async () => {
+    startServer();
+
+    let lock = false;
+
+    var job = new CronJob(
+        '*/10 * * * * *',
+        async () => {
+            if (lock) {
+                console.log('Parallel process is executing. Skipping');
+                return;
+            }
+            lock = true;
+
+            try {
+                await run();
+            } catch (e) {
+                console.error(e);
+            }
+
+            lock = false;
+        },
+        null,
+        true
+    );
 }
 
 main().catch((e) => console.error(e));
