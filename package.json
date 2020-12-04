@@ -1,0 +1,15 @@
+{
+  "name": "eth-state-metrics",
+  "version": "1.0.0",
+  "description": "NodeJS Service to pull last block from etherscan and DB and provide Prometheus metrics",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.21.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "pg": "^8.5.1",
+    "prom-client": "^12.0.0"
+  }
+}
