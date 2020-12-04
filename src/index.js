@@ -1,4 +1,5 @@
 require('dotenv').config()
+var process = require('process')
 const express = require('express')
 const etherscan = require('./etherscan');
 const AppError = require('./error');
@@ -17,7 +18,9 @@ const startServer = () => {
         }
     });
 
-    server.listen(process.env.SERVER_PORT);
+    const serverPort = process.env.SERVER_PORT || 3000;
+    const serverHost = process.env.SERVER_HOST || '127.0.0.1';
+    server.listen(serverPort, serverHost, () => console.log(`Http server running on port ${serverHost}:${serverPort}`));
 }
 
 const main = async () => {
@@ -70,3 +73,7 @@ const main = async () => {
 
 main().catch((e) => console.error(e));
 
+process.on('SIGINT', () => {
+    console.info("Interrupted")
+    process.exit(0)
+})
