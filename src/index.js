@@ -24,14 +24,21 @@ const startServer = () => {
     server.listen(serverPort, serverHost, () => console.log(`Http server running on port ${serverHost}:${serverPort}`));
 }
 
-const run = async () => {
+let dbStateDiff;
+
+const connectToDB = () => {
     const statediffUser = process.env.STATEDIFF_PG_USER;
     const statediffPassword = process.env.STATEDIFF_PG_PASSWORD;
     const statediffDB = process.env.STATEDIFF_PG_DATABASE;
     const statediffHost = process.env.STATEDIFF_PG_HOST;
     const statediffPort = process.env.STATEDIFF_PG_PORT;
 
-    const dbStateDiff = new DB('statediff', statediffUser, statediffPassword, statediffDB, statediffHost, statediffPort)
+    dbStateDiff = new DB('statediff', statediffUser, statediffPassword, statediffDB, statediffHost, statediffPort)
+}
+
+const run = async () => {
+
+    // statediff database
     const dbStateDiffBlockNumber = dbStateDiff.getBlockNumber();
 
     // Etherscan
@@ -71,6 +78,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const main = async () => {
     startServer();
+    connectToDB();
 
     let lock = false;
 
