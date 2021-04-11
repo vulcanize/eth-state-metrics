@@ -25,6 +25,7 @@ And then open in browser `http://172.17.0.2:3000/metrics`
 ```
 docker run \
     -e SERVER_HOST=0.0.0.0 \
+    -e ETHERSCAN_API_KEY="https://api.etherscan.io" \
     -e ETHERSCAN_API_KEY=*** \
     -e STATEDIFF_PG_HOST=*** \
     -d vulcanize/eth-state-metrics
