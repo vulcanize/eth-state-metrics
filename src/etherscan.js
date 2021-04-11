@@ -2,7 +2,7 @@ const axios = require('axios');
 const AppError = require('./error');
 
 const etherscanClient = axios.create({
-    baseURL: 'https://api.etherscan.io',
+    baseURL: process.env.ETHERSCAN_API_URL,
 });
 
 
